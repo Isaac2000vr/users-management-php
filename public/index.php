@@ -77,8 +77,8 @@ if ($httpMethod !== $definition['method']) {
     exit;
 }
 
-// Protect all user management routes behind authentication.
-$publicActions = array('home', 'login', 'authenticate', 'logout', 'forgot', 'forgot.send', 'create', 'store');
+// Protect user management routes behind authentication (allow public access to demo/reservas)
+$publicActions = array('home', 'login', 'authenticate', 'logout', 'forgot', 'forgot.send', 'create', 'store', 'reservas.index', 'reservas.create', 'reservas.store', 'reservas.show', 'reservas.edit', 'reservas.update', 'reservas.delete');
 if (!in_array($definition['action'], $publicActions, true) && !isLoggedIn()) {
     Flash::setMessage('Debes iniciar sesión para acceder a esta sección.');
     View::redirect('auth.login');
@@ -180,6 +180,124 @@ try {
             $controller->delete($id);
             Flash::setSuccess('Usuario eliminado correctamente.');
             View::redirect('users.index');
+            break;
+
+        // ──────────────────────────────────────────────────────────────
+        // Ejercicio 31: Reservas de Hotel (CRUDL)
+        // ──────────────────────────────────────────────────────────────
+        case 'reservas.index':
+            $controller = DependencyInjection::getReservaHotelController();
+            $reservas = $controller->index();
+            View::render('reservas/list', buildListReservasHotelViewData($reservas));
+            break;
+
+        case 'reservas.create':
+            ClassLoader::loadClass('ReservaHotelStatusEnum');
+            View::render('reservas/create', buildCreateReservaHotelViewData());
+            break;
+
+        case 'reservas.store':
+            $controller = DependencyInjection::getReservaHotelController();
+            $form = getReservaHotelFormData();
+            $form['id'] = generateUuid4();
+            $errors = validateReservaHotelForm($form);
+
+            if (!empty($errors)) {
+                Flash::setOld($form);
+                Flash::setErrors($errors);
+                Flash::setMessage('Corrige los errores del formulario.');
+                View::redirect('reservas.create');
+            }
+
+            $request = new CreateReservaHotelRequest(
+                $form['id'],
+                $form['fecha'],
+                $form['hotel'],
+                $form['huesped'],
+                $form['fechaInicio'],
+                $form['fechaFin'],
+                (float) $form['valor'],
+                $form['habitacion'],
+                (int) $form['numAcompanantes'],
+                $form['pais'],
+                $form['departamento'],
+                $form['ciudad'],
+                $form['horaCheckin'],
+                $form['horaCheckout'],
+                $form['empleadoAtiende'],
+                $form['empleadoDespide'],
+                $form['descripcion'],
+                $form['status']
+            );
+
+            $controller->store($request);
+            Flash::setSuccess('Reserva de hotel registrada exitosamente.');
+            View::redirect('reservas.index');
+            break;
+
+        case 'reservas.show':
+            $controller = DependencyInjection::getReservaHotelController();
+            $id = isset($_GET['id']) ? trim((string) $_GET['id']) : '';
+            $reserva = $controller->show($id);
+            View::render('reservas/show', array(
+                'pageTitle' => 'Detalle de Reserva',
+                'reserva' => $reserva,
+                'message' => Flash::message(),
+            ));
+            break;
+
+        case 'reservas.edit':
+            $controller = DependencyInjection::getReservaHotelController();
+            $id = isset($_GET['id']) ? trim((string) $_GET['id']) : '';
+            $reserva = $controller->show($id);
+            View::render('reservas/edit', buildEditReservaHotelViewData($reserva));
+            break;
+
+        case 'reservas.update':
+            $controller = DependencyInjection::getReservaHotelController();
+            $form = getReservaHotelFormData();
+            $errors = validateReservaHotelForm($form);
+
+            if (!empty($errors)) {
+                Flash::setOld($form);
+                Flash::setErrors($errors);
+                Flash::setMessage('Corrige los errores del formulario.');
+                header('Location: ?route=reservas.edit&id=' . urlencode($form['id']));
+                exit;
+            }
+
+            $request = new UpdateReservaHotelRequest(
+                $form['id'],
+                $form['fecha'],
+                $form['hotel'],
+                $form['huesped'],
+                $form['fechaInicio'],
+                $form['fechaFin'],
+                (float) $form['valor'],
+                $form['habitacion'],
+                (int) $form['numAcompanantes'],
+                $form['pais'],
+                $form['departamento'],
+                $form['ciudad'],
+                $form['horaCheckin'],
+                $form['horaCheckout'],
+                $form['empleadoAtiende'],
+                $form['empleadoDespide'],
+                $form['descripcion'],
+                $form['status']
+            );
+
+            $controller->update($request);
+            Flash::setSuccess('Reserva de hotel actualizada exitosamente.');
+            View::redirect('reservas.index');
+            break;
+
+        case 'reservas.delete':
+            $controller = DependencyInjection::getReservaHotelController();
+            $id = isset($_POST['id']) ? trim((string) $_POST['id']) : '';
+            $controller->delete($id);
+            Flash::setSuccess('Reserva de hotel eliminada exitosamente.');
+            View::redirect('reservas.index');
             break;
 
         case 'login':
@@ -314,6 +432,23 @@ try {
         case 'users.delete':
             Flash::setMessage($msg);
             View::redirect('users.index');
+            break;
+
+        case 'reservas.store':
+            Flash::setOld(getReservaHotelFormData());
+            View::redirect('reservas.create');
+            break;
+
+        case 'reservas.update':
+            $updateId = trim((string) ($_POST['id'] ?? ''));
+            Flash::setOld(getReservaHotelFormData());
+            header('Location: ?route=reservas.edit&id=' . urlencode($updateId));
+            exit;
+
+        case 'reservas.show':
+        case 'reservas.edit':
+        case 'reservas.delete':
+            View::redirect('reservas.index');
             break;
 
         default:
@@ -502,6 +637,139 @@ function validateUpdateUserForm(array $form): array
 
     if ($form['status'] === '') {
         $errors['status'] = 'El estado es obligatorio.';
+    }
+
+    return $errors;
+}
+
+
+// ──────────────────────────────────────────────────────────────
+// Helpers para Reservas de Hotel (Ejercicio 31)
+// ──────────────────────────────────────────────────────────────
+
+/**
+ * @param ReservaHotelResponse[] $reservas
+ * @return array<string, mixed>
+ */
+function buildListReservasHotelViewData(array $reservas): array
+{
+    return array(
+        'pageTitle' => 'Lista de Reservas de Hotel',
+        'reservas' => $reservas,
+        'message' => Flash::message(),
+        'success' => Flash::success(),
+    );
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function buildCreateReservaHotelViewData(): array
+{
+    return array(
+        'pageTitle' => 'Registrar Reserva de Hotel',
+        'statusOptions' => ReservaHotelStatusEnum::values(),
+        'message' => Flash::message(),
+        'success' => Flash::success(),
+        'errors' => Flash::errors(),
+        'old' => Flash::old(),
+    );
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function buildEditReservaHotelViewData(ReservaHotelResponse $reserva): array
+{
+    return array(
+        'pageTitle' => 'Editar Reserva de Hotel',
+        'reserva' => $reserva,
+        'statusOptions' => ReservaHotelStatusEnum::values(),
+        'message' => Flash::message(),
+        'errors' => Flash::errors(),
+        'old' => Flash::old(),
+    );
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function getReservaHotelFormData(): array
+{
+    return array(
+        'id' => isset($_POST['id']) ? trim((string) $_POST['id']) : '',
+        'fecha' => isset($_POST['fecha']) ? trim((string) $_POST['fecha']) : date('Y-m-d'),
+        'hotel' => isset($_POST['hotel']) ? trim((string) $_POST['hotel']) : '',
+        'huesped' => isset($_POST['huesped']) ? trim((string) $_POST['huesped']) : '',
+        'fechaInicio' => isset($_POST['fechaInicio']) ? trim((string) $_POST['fechaInicio']) : '',
+        'fechaFin' => isset($_POST['fechaFin']) ? trim((string) $_POST['fechaFin']) : '',
+        'valor' => isset($_POST['valor']) ? trim((string) $_POST['valor']) : '0',
+        'habitacion' => isset($_POST['habitacion']) ? trim((string) $_POST['habitacion']) : '',
+        'numAcompanantes' => isset($_POST['numAcompanantes']) ? (int) $_POST['numAcompanantes'] : 0,
+        'pais' => isset($_POST['pais']) ? trim((string) $_POST['pais']) : 'Colombia',
+        'departamento' => isset($_POST['departamento']) ? trim((string) $_POST['departamento']) : '',
+        'ciudad' => isset($_POST['ciudad']) ? trim((string) $_POST['ciudad']) : '',
+        'horaCheckin' => isset($_POST['horaCheckin']) ? trim((string) $_POST['horaCheckin']) : '15:00',
+        'horaCheckout' => isset($_POST['horaCheckout']) ? trim((string) $_POST['horaCheckout']) : '11:00',
+        'empleadoAtiende' => isset($_POST['empleadoAtiende']) ? trim((string) $_POST['empleadoAtiende']) : '',
+        'empleadoDespide' => isset($_POST['empleadoDespide']) ? trim((string) $_POST['empleadoDespide']) : '',
+        'descripcion' => isset($_POST['descripcion']) ? trim((string) $_POST['descripcion']) : '',
+        'status' => isset($_POST['status']) ? trim((string) $_POST['status']) : 'PENDING',
+    );
+}
+
+/**
+ * @param array<string, mixed> $form
+ * @return array<string, string>
+ */
+function validateReservaHotelForm(array $form): array
+{
+    $errors = array();
+
+    if ($form['hotel'] === '') {
+        $errors['hotel'] = 'El nombre del hotel es obligatorio.';
+    }
+
+    if ($form['huesped'] === '') {
+        $errors['huesped'] = 'El nombre del huésped es obligatorio.';
+    }
+
+    if ($form['fecha'] === '') {
+        $errors['fecha'] = 'La fecha de registro es obligatoria.';
+    }
+
+    if ($form['fechaInicio'] === '') {
+        $errors['fechaInicio'] = 'La fecha de inicio (check-in) es obligatoria.';
+    }
+
+    if ($form['fechaFin'] === '') {
+        $errors['fechaFin'] = 'La fecha de fin (check-out) es obligatoria.';
+    } elseif ($form['fechaFin'] < $form['fechaInicio']) {
+        $errors['fechaFin'] = 'La fecha de fin no puede ser anterior a la de inicio.';
+    }
+
+    if (!is_numeric($form['valor']) || (float) $form['valor'] < 0) {
+        $errors['valor'] = 'El valor debe ser un número positivo.';
+    }
+
+    if ($form['habitacion'] === '') {
+        $errors['habitacion'] = 'La habitación es obligatoria.';
+    }
+
+    if ((int) $form['numAcompanantes'] < 0) {
+        $errors['numAcompanantes'] = 'El número de acompañantes no puede ser negativo.';
+    }
+
+    if ($form['pais'] === '') {
+        $errors['pais'] = 'El país es obligatorio.';
+    }
+
+    if ($form['departamento'] === '') {
+        $errors['departamento'] = 'El departamento es obligatorio.';
+    }
+
+    if ($form['ciudad'] === '') {
+        $errors['ciudad'] = 'La ciudad es obligatoria.';
     }
 
     return $errors;

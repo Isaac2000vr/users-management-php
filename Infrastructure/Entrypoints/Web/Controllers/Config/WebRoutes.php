@@ -62,6 +62,36 @@ final class WebRoutes
                 'method' => 'POST',
                 'action' => 'forgot.send',
             ),
+
+            // Rutas para Reservas de Hotel (Ejercicio 31)
+            'reservas.index' => array(
+                'method' => 'GET',
+                'action' => 'reservas.index',
+            ),
+            'reservas.create' => array(
+                'method' => 'GET',
+                'action' => 'reservas.create',
+            ),
+            'reservas.store' => array(
+                'method' => 'POST',
+                'action' => 'reservas.store',
+            ),
+            'reservas.show' => array(
+                'method' => 'GET',
+                'action' => 'reservas.show',
+            ),
+            'reservas.edit' => array(
+                'method' => 'GET',
+                'action' => 'reservas.edit',
+            ),
+            'reservas.update' => array(
+                'method' => 'POST',
+                'action' => 'reservas.update',
+            ),
+            'reservas.delete' => array(
+                'method' => 'POST',
+                'action' => 'reservas.delete',
+            ),
         );
     }
 }

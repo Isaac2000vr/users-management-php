@@ -12,12 +12,20 @@ Aplicación web PHP para la gestión de usuarios: registro, listado, visualizaci
 
 ## Funcionalidades
 
-- Crear, listar, ver, editar y eliminar usuarios
-- Autenticación con sesión (login / logout)
-- Recuperación de contraseña mediante contraseña temporal enviada por correo
-- Protección de rutas según estado de autenticación
-- Protección contra acceso directo a archivos y listado de directorios
-- Envía notificaciones a los usuarios vía Correo Electronico
+- **Módulo Usuarios:**
+  - Crear, listar, ver, editar y eliminar usuarios
+  - Autenticación con sesión (login / logout)
+  - Recuperación de contraseña mediante contraseña temporal enviada por correo
+  - Protección de rutas según estado de autenticación
+  - Notificaciones vía correo electrónico
+
+- **Módulo Ejercicio 31: ReservaHotel (DDD / Hexagonal / CQRS):**
+  - Gestión completa CRUDL de Reservas de Hotel.
+  - Atributos de negocio: `fecha`, `hotel`, `huesped`, `fechaInicio`, `fechaFin`, `valor`, `habitacion`, `numAcompanantes`, `pais`, `departamento`, `ciudad`, `horaCheckin`, `horaCheckout`, `empleadoAtiende`, `empleadoDespide`, `descripcion`.
+  - Capa de Dominio con Value Objects (`ReservaHotelId`, `ReservaHotelFecha`, `ReservaHotelValor`), Enum (`ReservaHotelStatusEnum`), Domain Model y Domain Events.
+  - Puertos In/Out, DTOs de comandos y consultas (CQRS), servicios de caso de uso.
+  - Adaptador de persistencia MySQL con DTO, Entity, Mapper y Repositorio.
+  - Controlador web, validaciones y vistas responsivas.
 
 ---
 
