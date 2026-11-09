@@ -6,12 +6,12 @@ require_once __DIR__ . '/../Dto/ReservaHotelResponse.php';
 require_once __DIR__ . '/../Dto/CreateReservaHotelRequest.php';
 require_once __DIR__ . '/../Dto/UpdateReservaHotelRequest.php';
 
-require_once __DIR__ . '/../../../../Application/Services/Dto/Commands/CreateReservaHotelCommand.php';
-require_once __DIR__ . '/../../../../Application/Services/Dto/Commands/UpdateReservaHotelCommand.php';
-require_once __DIR__ . '/../../../../Application/Services/Dto/Commands/DeleteReservaHotelCommand.php';
-require_once __DIR__ . '/../../../../Application/Services/Dto/Queries/GetReservaHotelByIdQuery.php';
+require_once __DIR__ . '/../../../../../Application/Services/Dto/Commands/CreateReservaHotelCommand.php';
+require_once __DIR__ . '/../../../../../Application/Services/Dto/Commands/UpdateReservaHotelCommand.php';
+require_once __DIR__ . '/../../../../../Application/Services/Dto/Commands/DeleteReservaHotelCommand.php';
+require_once __DIR__ . '/../../../../../Application/Services/Dto/Queries/GetReservaHotelByIdQuery.php';
 
-require_once __DIR__ . '/../../../../Domain/Models/ReservaHotelModel.php';
+require_once __DIR__ . '/../../../../../Domain/Models/ReservaHotelModel.php';
 
 final class ReservaHotelWebMapper
 {
