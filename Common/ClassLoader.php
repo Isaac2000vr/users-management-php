@@ -80,6 +80,54 @@ final class ClassLoader
         'Flash' => 'Infrastructure/Entrypoints/Web/Presentation/Flash.php',
 
         'DependencyInjection' => 'Common/DependencyInjection.php',
+
+        // ReservaHotel (Ejercicio 31)
+        'InvalidReservaHotelException' => 'Domain/Exceptions/InvalidReservaHotelException.php',
+        'ReservaHotelNotFoundException' => 'Domain/Exceptions/ReservaHotelNotFoundException.php',
+        'ReservaHotelStatusEnum' => 'Domain/Enums/ReservaHotelStatusEnum.php',
+        'ReservaHotelId' => 'Domain/ValueObjects/ReservaHotelId.php',
+        'ReservaHotelFecha' => 'Domain/ValueObjects/ReservaHotelFecha.php',
+        'ReservaHotelValor' => 'Domain/ValueObjects/ReservaHotelValor.php',
+        'ReservaHotelModel' => 'Domain/Models/ReservaHotelModel.php',
+        'ReservaHotelCreatedDomainEvent' => 'Domain/Events/ReservaHotelCreatedDomainEvent.php',
+        'ReservaHotelUpdatedDomainEvent' => 'Domain/Events/ReservaHotelUpdatedDomainEvent.php',
+        'ReservaHotelDeletedDomainEvent' => 'Domain/Events/ReservaHotelDeletedDomainEvent.php',
+
+        'CreateReservaHotelUseCase' => 'Application/Ports/In/CreateReservaHotelUseCase.php',
+        'UpdateReservaHotelUseCase' => 'Application/Ports/In/UpdateReservaHotelUseCase.php',
+        'GetReservaHotelByIdUseCase' => 'Application/Ports/In/GetReservaHotelByIdUseCase.php',
+        'GetAllReservasHotelUseCase' => 'Application/Ports/In/GetAllReservasHotelUseCase.php',
+        'DeleteReservaHotelUseCase' => 'Application/Ports/In/DeleteReservaHotelUseCase.php',
+
+        'SaveReservaHotelPort' => 'Application/Ports/Out/SaveReservaHotelPort.php',
+        'UpdateReservaHotelPort' => 'Application/Ports/Out/UpdateReservaHotelPort.php',
+        'GetReservaHotelByIdPort' => 'Application/Ports/Out/GetReservaHotelByIdPort.php',
+        'GetAllReservasHotelPort' => 'Application/Ports/Out/GetAllReservasHotelPort.php',
+        'DeleteReservaHotelPort' => 'Application/Ports/Out/DeleteReservaHotelPort.php',
+
+        'CreateReservaHotelCommand' => 'Application/Services/Dto/Commands/CreateReservaHotelCommand.php',
+        'UpdateReservaHotelCommand' => 'Application/Services/Dto/Commands/UpdateReservaHotelCommand.php',
+        'DeleteReservaHotelCommand' => 'Application/Services/Dto/Commands/DeleteReservaHotelCommand.php',
+        'GetReservaHotelByIdQuery' => 'Application/Services/Dto/Queries/GetReservaHotelByIdQuery.php',
+        'GetAllReservasHotelQuery' => 'Application/Services/Dto/Queries/GetAllReservasHotelQuery.php',
+
+        'CreateReservaHotelService' => 'Application/Services/CreateReservaHotelService.php',
+        'UpdateReservaHotelService' => 'Application/Services/UpdateReservaHotelService.php',
+        'GetReservaHotelByIdService' => 'Application/Services/GetReservaHotelByIdService.php',
+        'GetAllReservasHotelService' => 'Application/Services/GetAllReservasHotelService.php',
+        'DeleteReservaHotelService' => 'Application/Services/DeleteReservaHotelService.php',
+        'ReservaHotelApplicationMapper' => 'Application/Services/Mappers/ReservaHotelApplicationMapper.php',
+
+        'ReservaHotelPersistenceDto' => 'Infrastructure/Adapters/Persistence/MySQL/Dto/ReservaHotelPersistenceDto.php',
+        'ReservaHotelEntity' => 'Infrastructure/Adapters/Persistence/MySQL/Entity/ReservaHotelEntity.php',
+        'ReservaHotelPersistenceMapper' => 'Infrastructure/Adapters/Persistence/MySQL/Mapper/ReservaHotelPersistenceMapper.php',
+        'ReservaHotelRepositoryMySQL' => 'Infrastructure/Adapters/Persistence/MySQL/Repository/ReservaHotelRepositoryMySQL.php',
+
+        'CreateReservaHotelRequest' => 'Infrastructure/Entrypoints/Web/Controllers/Dto/CreateReservaHotelRequest.php',
+        'UpdateReservaHotelRequest' => 'Infrastructure/Entrypoints/Web/Controllers/Dto/UpdateReservaHotelRequest.php',
+        'ReservaHotelResponse' => 'Infrastructure/Entrypoints/Web/Controllers/Dto/ReservaHotelResponse.php',
+        'ReservaHotelWebMapper' => 'Infrastructure/Entrypoints/Web/Controllers/Mapper/ReservaHotelWebMapper.php',
+        'ReservaHotelController' => 'Infrastructure/Entrypoints/Web/Controllers/ReservaHotelController.php',
     );
 
     public static function register(): void

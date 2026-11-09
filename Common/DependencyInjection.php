@@ -156,4 +156,74 @@ final class DependencyInjection
             self::getUserRepository()
         );
     }
+
+    // ========================================================
+    // Inyección de dependencias para ReservaHotel (Ejercicio 31)
+    // ========================================================
+
+    public static function getReservaHotelPersistenceMapper(): ReservaHotelPersistenceMapper
+    {
+        ClassLoader::loadClass('ReservaHotelPersistenceMapper');
+        return new ReservaHotelPersistenceMapper();
+    }
+
+    public static function getReservaHotelRepository(): ReservaHotelRepositoryMySQL
+    {
+        ClassLoader::loadClass('ReservaHotelRepositoryMySQL');
+        return new ReservaHotelRepositoryMySQL(
+            self::getPdo(),
+            self::getReservaHotelPersistenceMapper()
+        );
+    }
+
+    public static function getCreateReservaHotelUseCase(): CreateReservaHotelUseCase
+    {
+        ClassLoader::loadClass('CreateReservaHotelService');
+        return new CreateReservaHotelService(self::getReservaHotelRepository());
+    }
+
+    public static function getUpdateReservaHotelUseCase(): UpdateReservaHotelUseCase
+    {
+        ClassLoader::loadClass('UpdateReservaHotelService');
+        $repository = self::getReservaHotelRepository();
+        return new UpdateReservaHotelService($repository, $repository);
+    }
+
+    public static function getGetReservaHotelByIdUseCase(): GetReservaHotelByIdUseCase
+    {
+        ClassLoader::loadClass('GetReservaHotelByIdService');
+        return new GetReservaHotelByIdService(self::getReservaHotelRepository());
+    }
+
+    public static function getGetAllReservasHotelUseCase(): GetAllReservasHotelUseCase
+    {
+        ClassLoader::loadClass('GetAllReservasHotelService');
+        return new GetAllReservasHotelService(self::getReservaHotelRepository());
+    }
+
+    public static function getDeleteReservaHotelUseCase(): DeleteReservaHotelUseCase
+    {
+        ClassLoader::loadClass('DeleteReservaHotelService');
+        $repository = self::getReservaHotelRepository();
+        return new DeleteReservaHotelService($repository, $repository);
+    }
+
+    public static function getReservaHotelWebMapper(): ReservaHotelWebMapper
+    {
+        ClassLoader::loadClass('ReservaHotelWebMapper');
+        return new ReservaHotelWebMapper();
+    }
+
+    public static function getReservaHotelController(): ReservaHotelController
+    {
+        ClassLoader::loadClass('ReservaHotelController');
+        return new ReservaHotelController(
+            self::getCreateReservaHotelUseCase(),
+            self::getUpdateReservaHotelUseCase(),
+            self::getGetReservaHotelByIdUseCase(),
+            self::getGetAllReservasHotelUseCase(),
+            self::getDeleteReservaHotelUseCase(),
+            self::getReservaHotelWebMapper()
+        );
+    }
 }
