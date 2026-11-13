@@ -142,10 +142,12 @@ Impórtalos en Postman, elige el entorno **Local** y ejecuta las peticiones **en
 
 ## En la nube
 
-- Aplicación: _(se escribe aquí después de publicarla en Render)_
+- Aplicación: <https://reservas-hotel-php.onrender.com/public/index.php?route=auth.login>
 - Video: _(se escribe aquí el enlace del video)_
 
 La aplicación en la nube usa TiDB Cloud como base de datos y Render para servir las páginas. Las dos son gratis para practicar.
+
+La primera visita del día puede tardar hasta un minuto, porque el plan gratuito de Render duerme la aplicación cuando nadie la usa.
 
 ---
 
