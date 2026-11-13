@@ -77,8 +77,8 @@ if ($httpMethod !== $definition['method']) {
     exit;
 }
 
-// Protect user management routes behind authentication (allow public access to demo/reservas)
-$publicActions = array('home', 'login', 'authenticate', 'logout', 'forgot', 'forgot.send', 'create', 'store', 'reservas.index', 'reservas.create', 'reservas.store', 'reservas.show', 'reservas.edit', 'reservas.update', 'reservas.delete');
+// Protect user management and hotel reservations behind authentication
+$publicActions = array('home', 'login', 'authenticate', 'logout', 'forgot', 'forgot.send', 'create', 'store');
 if (!in_array($definition['action'], $publicActions, true) && !isLoggedIn()) {
     Flash::setMessage('Debes iniciar sesión para acceder a esta sección.');
     View::redirect('auth.login');
@@ -192,14 +192,16 @@ try {
             break;
 
         case 'reservas.create':
-            ClassLoader::loadClass('ReservaHotelStatusEnum');
             View::render('reservas/create', buildCreateReservaHotelViewData());
             break;
 
         case 'reservas.store':
             $controller = DependencyInjection::getReservaHotelController();
             $form = getReservaHotelFormData();
-            $form['id'] = generateUuid4();
+            // El id es opcional: si no llega (por ejemplo desde Postman), se genera.
+            $form['id'] = $form['id'] !== '' ? $form['id'] : generateUuid4();
+            // Una reserva nueva siempre nace pendiente; el estado se cambia al editar.
+            $form['status'] = 'PENDING';
             $errors = validateReservaHotelForm($form);
 
             if (!empty($errors)) {
@@ -668,7 +670,6 @@ function buildCreateReservaHotelViewData(): array
 {
     return array(
         'pageTitle' => 'Registrar Reserva de Hotel',
-        'statusOptions' => ReservaHotelStatusEnum::values(),
         'message' => Flash::message(),
         'success' => Flash::success(),
         'errors' => Flash::errors(),
