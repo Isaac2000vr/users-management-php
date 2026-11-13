@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: reservas-hotel-php
+    runtime: docker
+    plan: free
+    region: ohio
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /public/health.php
+    autoDeploy: true
+    envVars:
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "4000"
+      - key: DB_DATABASE
+        value: crud_usuarios
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_CHARSET
+        value: utf8mb4
+      - key: DB_SSL_CA
+        value: "true"
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_ENCRYPTION
+        value: tls
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM_ADDRESS
+        sync: false
+      - key: SMTP_FROM_NAME
+        value: CRUD Usuarios

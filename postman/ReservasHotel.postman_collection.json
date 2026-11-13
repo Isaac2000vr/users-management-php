@@ -1,0 +1,175 @@
+{
+  "info": {
+    "name": "Reservas Hotel (PHP)",
+    "description": "Coleccion para probar el CRUDL de ReservaHotel de la aplicacion PHP. Ejecuta las peticiones en orden: la primera inicia sesion y Postman conserva la cookie de sesion.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "reservaId",
+      "value": "33333333-3333-4333-8333-333333333333"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Iniciar sesion",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "email",
+              "value": "{{adminEmail}}"
+            },
+            {
+              "key": "password",
+              "value": "{{adminPassword}}"
+            }
+          ]
+        },
+        "url": "{{baseUrl}}{{appPath}}?route=auth.authenticate",
+        "description": "Crea la sesion. Si el login es correcto, redirige al inicio."
+      }
+    },
+    {
+      "name": "02 - Listar reservas",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}{{appPath}}?route=reservas.index",
+        "description": "Muestra la lista de reservas."
+      }
+    },
+    {
+      "name": "03 - Abrir formulario de creacion",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}{{appPath}}?route=reservas.create",
+        "description": "Muestra el formulario para crear una reserva."
+      }
+    },
+    {
+      "name": "04 - Crear reserva",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "id", "value": "{{reservaId}}" },
+            { "key": "fecha", "value": "2026-11-13" },
+            { "key": "hotel", "value": "Hotel Caribe Plaza" },
+            { "key": "huesped", "value": "Isaac David Vasquez Ramos" },
+            { "key": "fechaInicio", "value": "2026-12-01" },
+            { "key": "fechaFin", "value": "2026-12-05" },
+            { "key": "valor", "value": "450000" },
+            { "key": "habitacion", "value": "Suite 405" },
+            { "key": "numAcompanantes", "value": "2" },
+            { "key": "pais", "value": "Colombia" },
+            { "key": "departamento", "value": "Bolivar" },
+            { "key": "ciudad", "value": "Cartagena" },
+            { "key": "horaCheckin", "value": "15:00" },
+            { "key": "horaCheckout", "value": "11:00" },
+            { "key": "empleadoAtiende", "value": "Carlos Mendoza" },
+            { "key": "empleadoDespide", "value": "Laura Gomez" },
+            { "key": "descripcion", "value": "Reserva creada desde Postman" }
+          ]
+        },
+        "url": "{{baseUrl}}{{appPath}}?route=reservas.store",
+        "description": "Crea una reserva con el id indicado y estado PENDING. El id es opcional; si no se envia, el programa genera uno."
+      }
+    },
+    {
+      "name": "05 - Ver una reserva",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}{{appPath}}?route=reservas.show&id={{reservaId}}",
+        "description": "Muestra el detalle de la reserva creada."
+      }
+    },
+    {
+      "name": "06 - Abrir formulario de edicion",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}{{appPath}}?route=reservas.edit&id={{reservaId}}",
+        "description": "Muestra el formulario con los datos actuales."
+      }
+    },
+    {
+      "name": "07 - Actualizar reserva",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "id", "value": "{{reservaId}}" },
+            { "key": "fecha", "value": "2026-11-13" },
+            { "key": "hotel", "value": "Hotel Caribe Plaza" },
+            { "key": "huesped", "value": "Isaac David Vasquez Ramos" },
+            { "key": "fechaInicio", "value": "2026-12-01" },
+            { "key": "fechaFin", "value": "2026-12-06" },
+            { "key": "valor", "value": "520000" },
+            { "key": "habitacion", "value": "Suite 405" },
+            { "key": "numAcompanantes", "value": "3" },
+            { "key": "pais", "value": "Colombia" },
+            { "key": "departamento", "value": "Bolivar" },
+            { "key": "ciudad", "value": "Cartagena" },
+            { "key": "horaCheckin", "value": "15:00" },
+            { "key": "horaCheckout", "value": "11:00" },
+            { "key": "empleadoAtiende", "value": "Carlos Mendoza" },
+            { "key": "empleadoDespide", "value": "Laura Gomez" },
+            { "key": "descripcion", "value": "Reserva actualizada desde Postman" },
+            { "key": "status", "value": "CONFIRMED" }
+          ]
+        },
+        "url": "{{baseUrl}}{{appPath}}?route=reservas.update",
+        "description": "Actualiza la reserva y la deja en estado CONFIRMED."
+      }
+    },
+    {
+      "name": "08 - Eliminar reserva",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "id", "value": "{{reservaId}}" }
+          ]
+        },
+        "url": "{{baseUrl}}{{appPath}}?route=reservas.delete",
+        "description": "Borra la reserva creada para la prueba."
+      }
+    },
+    {
+      "name": "09 - Estado del servicio",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/public/health.php",
+        "description": "Comprueba que la aplicacion y la base de datos respondan."
+      }
+    }
+  ]
+}
