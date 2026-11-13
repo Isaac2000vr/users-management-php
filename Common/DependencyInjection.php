@@ -23,8 +23,33 @@ final class DependencyInjection
             database: EnvLoader::get('DB_DATABASE', 'crud_usuarios'),
             username: EnvLoader::get('DB_USERNAME', 'root'),
             password: EnvLoader::get('DB_PASSWORD', ''),
-            charset: EnvLoader::get('DB_CHARSET', 'utf8mb4')
+            charset: EnvLoader::get('DB_CHARSET', 'utf8mb4'),
+            sslCa: self::resolveSslCa()
         );
+    }
+
+    /**
+     * Devuelve la ruta absoluta del certificado TLS o null si no se usa SSL.
+     * DB_SSL_CA puede ser "true" (usa el certificado incluido para TiDB Cloud)
+     * o una ruta relativa a la raiz del proyecto.
+     */
+    private static function resolveSslCa(): ?string
+    {
+        $sslCa = trim((string) EnvLoader::get('DB_SSL_CA', ''));
+
+        if ($sslCa === '' || $sslCa === 'false' || $sslCa === '0') {
+            return null;
+        }
+
+        if ($sslCa === 'true' || $sslCa === '1') {
+            return dirname(__DIR__)
+                . '/Infrastructure/Adapters/Persistence/MySQL/Config/certs/isrgrootx1.pem';
+        }
+
+        $isAbsolute = str_starts_with($sslCa, '/')
+            || preg_match('/^[A-Za-z]:[\\\\\\/]/', $sslCa) === 1;
+
+        return $isAbsolute ? $sslCa : dirname(__DIR__) . '/' . ltrim($sslCa, '/');
     }
 
     public static function getPdo(): PDO

@@ -1,0 +1,6 @@
+# Mantener finales de linea correctos para que Docker funcione en Windows y Linux
+* text=auto
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.conf text eol=lf
+*.pem text eol=lf
