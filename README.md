@@ -1,124 +1,157 @@
-# CRUD Usuarios: Arquitectura Hexagonal con DDD y CQRS
+# Reservas de Hotel
 
-Aplicación web PHP para la gestión de usuarios: registro, listado, visualización, edición, eliminación, autenticación con sesión y recuperación de contraseña por correo.
+Este es un programa web muy sencillo para guardar las reservas de un hotel.
 
-## Tecnologías
+Piensa en una libreta donde el recepcionista escribe:
 
-- PHP 8.3
-- MySQL
-- Apache mod_rewrite
+- el nombre del hotel,
+- el nombre del huésped,
+- las fechas de entrada y salida,
+- el valor de la reserva,
+- y otros datos importantes.
 
----
-
-## Funcionalidades
-
-- **Módulo Usuarios:**
-  - Crear, listar, ver, editar y eliminar usuarios
-  - Autenticación con sesión (login / logout)
-  - Recuperación de contraseña mediante contraseña temporal enviada por correo
-  - Protección de rutas según estado de autenticación
-  - Notificaciones vía correo electrónico
-
-- **Módulo Ejercicio 31: ReservaHotel (DDD / Hexagonal / CQRS):**
-  - Gestión completa CRUDL de Reservas de Hotel.
-  - Atributos de negocio: `fecha`, `hotel`, `huesped`, `fechaInicio`, `fechaFin`, `valor`, `habitacion`, `numAcompanantes`, `pais`, `departamento`, `ciudad`, `horaCheckin`, `horaCheckout`, `empleadoAtiende`, `empleadoDespide`, `descripcion`.
-  - Capa de Dominio con Value Objects (`ReservaHotelId`, `ReservaHotelFecha`, `ReservaHotelValor`), Enum (`ReservaHotelStatusEnum`), Domain Model y Domain Events.
-  - Puertos In/Out, DTOs de comandos y consultas (CQRS), servicios de caso de uso.
-  - Adaptador de persistencia MySQL con DTO, Entity, Mapper y Repositorio.
-  - Controlador web, validaciones y vistas responsivas.
+Este programa hace lo mismo, pero en el navegador.
 
 ---
 
-## Conceptos aplicados
+## Qué se puede hacer
 
-### Arquitectura general
-- Arquitectura Hexagonal (Ports & Adapters)
-- DDD (Domain-Driven Design)
-- CQRS
-- Capas: Domain / Application / Infrastructure / Entrypoints
-- Front Controller · Single Entry Point
+- Entrar con un correo y una contraseña.
+- Ver la lista de todas las reservas.
+- Crear una reserva nueva.
+- Abrir una reserva para ver todos sus datos.
+- Editarla si algo cambia.
+- Borrarla si ya no se necesita.
+- Cambiar el estado de una reserva: `PENDING` (pendiente), `CONFIRMED` (confirmada) o `CANCELLED` (cancelada).
 
-### Capa de Dominio
-- Rich Domain Model
-- Value Objects
-- Named Constructors
-- Domain Exceptions
-- Domain Events
-- Enumerations (Enums)
-- Ubiquitous Language
-- Inmutabilidad
-- Fail-fast validation
-- Encapsulación de reglas de negocio
-
-
-### Capa de Aplicación
-- Use Cases
-- Application Services
-- Ports In (interfaces de casos de uso)
-- Ports Out (interfaces de persistencia)
-- Commands y Queries
-- DTOs
-- Anti-corruption Layer
-- Application Mapper
-
-
-### Capa de Infraestructura
-- Repository Pattern
-- Data Mapper
-- Persistence DTO
-- Persistence Entity
-- PDO con Prepared Statements
-- Adapter Pattern
-
-### Entrypoints / Presentación
-- Enrutamiento por query string (`?route=`)
-- PRG (Post-Redirect-Get)
-- Flash Messages
-- Autenticación basada en sesiones
-- Web Mapper
-- Web DTOs (WebRequest / UserResponse)
-- `View::render` con `extract`
-- Security Guard (IIFE)
+Una reserva nueva **siempre empieza en `PENDING`**. El estado se cambia después, al editarla.
 
 ---
 
-### Patrones de diseño
-- Front Controller
-- Repository
-- Data Mapper
-- Factory Method
-- DTO
-- Strategy
-- Template Method
-- IIFE
-- PRG (Post-Redirect-Get)
+## Cómo abrir el programa
 
-### Principios SOLID
-- **SRP** — Single Responsibility Principle
-- **OCP** — Open/Closed Principle
-- **LSP** — Liskov Substitution Principle
-- **ISP** — Interface Segregation Principle
-- **DIP** — Dependency Inversion Principle
+### Opción 1: con Docker (la más fácil)
 
-### Principios de Clean Code
-- `declare(strict_types=1)` en todos los archivos
-- Clases `final`
-- Value Objects inmutables
-- Named Constructors
-- Fail-fast
-- Nombres autodocumentados
-- Separación estricta de capas
-- Sin fugas de abstracción
-- Fail-safe defaults (valores por defecto seguros)
+Solo necesitas tener Docker abierto. Después, en una terminal dentro de la carpeta del proyecto, escribe:
 
-### Configuración externalizada (12-Factor App: Factor III)
-- Variables de entorno separadas del código fuente
-- Credenciales en `.env` (ignorado por git), nunca en se debe publicar en el repo
-- `.env.example` como plantilla y documentación de ejemplo para el equipo
-- `EnvLoader` con responsabilidad única: leer el entorno
-- Las variables reales del servidor tienen prioridad sobre `.env` (environment-over-code)
+```bash
+docker compose up -d --build
+```
 
-### Seguridad
+Espera unos segundos y abre esta dirección en el navegador:
 
-- Credenciales fuera del código fuente y del historial de git
+<http://localhost:8080/public/index.php?route=auth.login>
 
+Para apagarlo:
+
+```bash
+docker compose down
+```
+
+Si además quieres borrar los datos guardados:
+
+```bash
+docker compose down -v
+```
+
+### Opción 2: sin Docker
+
+Necesitas PHP 8.3 y MySQL instalados.
+
+1. Crea la base de datos con este comando:
+
+   ```bash
+   mysql -u root -p < Infrastructure/Adapters/Persistence/MySQL/Config/database.sql
+   ```
+
+2. Copia la plantilla de configuración:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Abre `.env` y escribe la contraseña de tu MySQL.
+
+4. Arranca el programa:
+
+   ```bash
+   php -S 127.0.0.1:8090 -t .
+   ```
+
+5. Abre en el navegador:
+
+   <http://127.0.0.1:8090/public/index.php?route=auth.login>
+
+---
+
+## Usuario para entrar
+
+| Correo | Contraseña |
+| --- | --- |
+| `admin@crud.com` | `admin123` |
+
+---
+
+## Qué hay dentro de cada carpeta
+
+No hace falta saber esto para usar el programa, pero ayuda a entenderlo:
+
+| Carpeta | Qué guarda |
+| --- | --- |
+| `Domain` | Las reglas del negocio. Por ejemplo: una fecha de salida no puede ser antes que la de entrada. |
+| `Application` | Lo que el programa sabe hacer: crear, listar, editar, borrar. |
+| `Infrastructure` | Lo que habla con el mundo de afuera: MySQL y el correo. |
+| `Infrastructure/Entrypoints` | Las páginas y los formularios que ve el usuario. |
+| `public` | La puerta de entrada del programa. |
+| `tests` | Las pruebas automáticas. |
+
+---
+
+## Cómo saber si todo funciona
+
+Ejecuta las pruebas:
+
+```bash
+php tests/test_reserva_hotel.php
+```
+
+Si al final dice que todas pasaron, todo está bien.
+
+También puedes revisar la salud del servicio en:
+
+<http://localhost:8080/public/health.php>
+
+Debe responder algo como:
+
+```json
+{"status":"ok","database":"ok"}
+```
+
+---
+
+## Probar con Postman
+
+En la carpeta `postman` hay dos archivos:
+
+- la colección con las peticiones,
+- el entorno local con la dirección del programa.
+
+Impórtalos en Postman, elige el entorno **Local** y ejecuta las peticiones **en orden**. La primera petición inicia sesión y Postman guarda la cookie para las demás.
+
+---
+
+## En la nube
+
+- Aplicación: _(se escribe aquí después de publicarla en Render)_
+- Video: _(se escribe aquí el enlace del video)_
+
+La aplicación en la nube usa TiDB Cloud como base de datos y Render para servir las páginas. Las dos son gratis para practicar.
+
+---
+
+## Si algo falla
+
+- **No carga la página:** revisa que el programa esté encendido.
+- **No encuentra la base de datos:** revisa que MySQL esté encendido y que los datos del archivo `.env` sean correctos.
+- **Dice "insecure transport":** la base de datos pide una conexión segura. Pon `DB_SSL_CA=true` en `.env`.
+- **No puedo entrar:** usa el correo y la contraseña de la tabla de arriba.

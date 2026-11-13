@@ -118,17 +118,6 @@
         </div>
 
         <div class="form-group">
-            <label for="status">Estado *</label><br>
-            <select id="status" name="status">
-                <?php foreach ($statusOptions as $opt): ?>
-                    <option value="<?= htmlspecialchars($opt, ENT_QUOTES, 'UTF-8') ?>" <?= (($old['status'] ?? 'PENDING') === $opt) ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($opt, ENT_QUOTES, 'UTF-8') ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
-        <div class="form-group">
             <label for="horaCheckin">Hora Check-in *</label><br>
             <input type="text" id="horaCheckin" name="horaCheckin" required placeholder="15:00"
                 value="<?= htmlspecialchars($old['horaCheckin'] ?? '15:00', ENT_QUOTES, 'UTF-8') ?>">

@@ -1,0 +1,17 @@
+# Cosas que NO necesitamos dentro de la imagen
+.git
+.gitignore
+.env
+.env.local
+docs
+tests
+Dockerfile
+compose.yaml
+render.yaml
+.github
+*.log
+*.md
+!README.md
+*.ps1
+*.bak
+*.tmp
