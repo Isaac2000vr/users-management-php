@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
@@ -61,3 +62,21 @@ jobs:
 
       - name: Construir imagen
         run: docker build -t reservas-hotel-php .
+
+  deploy:
+    name: Desplegar en Render
+    runs-on: ubuntu-latest
+    needs:
+      - test
+      - docker
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
+    env:
+      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+    steps:
+      - name: Disparar el deploy hook
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "::warning::No existe el secreto RENDER_DEPLOY_HOOK_URL; se omite el despliegue."
+            exit 0
+          fi
+          curl --fail --silent --show-error --request POST "$RENDER_DEPLOY_HOOK_URL"
